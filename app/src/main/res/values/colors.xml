@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="logo_blue">#009EFF</color>
+    <color name="logo_green">#00C853</color>
+    <color name="logo_orange">#FF9100</color>
+    <color name="logo_purple">#6200EA</color>
+</resources>

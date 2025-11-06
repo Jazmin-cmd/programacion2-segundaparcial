@@ -1,0 +1,47 @@
+package com.example.clientsyncapp.data;
+
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+
+@Entity(tableName = "logs_app")
+public class LogApp {
+
+    @PrimaryKey(autoGenerate = true)
+    private int id;
+
+    private String fechaHora;
+    private String descripcionError;
+    private String claseOrigen;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getFechaHora() {
+        return fechaHora;
+    }
+
+    public void setFechaHora(String fechaHora) {
+        this.fechaHora = fechaHora;
+    }
+
+    public String getDescripcionError() {
+        return descripcionError;
+    }
+
+    public void setDescripcionError(String descripcionError) {
+        this.descripcionError = descripcionError;
+    }
+
+    public String getClaseOrigen() {
+        return claseOrigen;
+    }
+
+    public void setClaseOrigen(String claseOrigen) {
+        this.claseOrigen = claseOrigen;
+    }
+}
