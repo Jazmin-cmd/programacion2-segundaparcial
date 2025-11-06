@@ -13,35 +13,22 @@ public class LogApp {
     private String descripcionError;
     private String claseOrigen;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getFechaHora() {
-        return fechaHora;
-    }
-
-    public void setFechaHora(String fechaHora) {
+    public LogApp(String fechaHora, String descripcionError, String claseOrigen) {
         this.fechaHora = fechaHora;
-    }
-
-    public String getDescripcionError() {
-        return descripcionError;
-    }
-
-    public void setDescripcionError(String descripcionError) {
         this.descripcionError = descripcionError;
-    }
-
-    public String getClaseOrigen() {
-        return claseOrigen;
-    }
-
-    public void setClaseOrigen(String claseOrigen) {
         this.claseOrigen = claseOrigen;
     }
+
+    // Getters y Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+
+    public String getFechaHora() { return fechaHora; }
+    public void setFechaHora(String fechaHora) { this.fechaHora = fechaHora; }
+
+    public String getDescripcionError() { return descripcionError; }
+    public void setDescripcionError(String descripcionError) { this.descripcionError = descripcionError; }
+
+    public String getClaseOrigen() { return claseOrigen; }
+    public void setClaseOrigen(String claseOrigen) { this.claseOrigen = claseOrigen; }
 }

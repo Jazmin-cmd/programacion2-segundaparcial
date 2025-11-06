@@ -15,6 +15,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import java.util.concurrent.TimeUnit;
+import com.example.clientsyncapp.workers.SyncLogWorker;
+
+
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -40,6 +47,8 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -127,6 +136,36 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, UploadFilesActivity.class);
             startActivity(intent);
         });
+
+        /*Button btnProbarWorker = findViewById(R.id.btnProbarWorker);
+        btnProbarWorker.setOnClickListener(v -> {
+            logRepository.insertLog("Error de prueba A", TAG);
+            logRepository.insertLog("Error de prueba B", TAG);
+
+            androidx.work.OneTimeWorkRequest testSync = new androidx.work.OneTimeWorkRequest.Builder(
+                    com.example.clientsyncapp.workers.SyncLogWorker.class
+            ).build();
+            androidx.work.WorkManager.getInstance(this).enqueue(testSync);
+
+            Toast.makeText(this, "Worker ejecutado: revisa Logcat y webhook.site", Toast.LENGTH_LONG).show();
+        });
+
+        // Configurar Worker periódico para sincronizar logs cada 5 minutos
+        PeriodicWorkRequest syncLogsRequest = new PeriodicWorkRequest.Builder(
+                SyncLogWorker.class,
+                5, TimeUnit.MINUTES
+        ).build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "SyncLogsWorker",
+                ExistingPeriodicWorkPolicy.REPLACE,
+                syncLogsRequest
+        );
+
+        Log.d(TAG, "Worker periódico de sincronización de logs encolado cada 5 minutos.");
+
+
+        probarErrores();*/
     }
 
     private void openCamera(int imageView) {
@@ -192,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
         ApiService apiService = retrofit.create(ApiService.class);
 
-        Call<Void> call = apiService.uploadClientData("https://webhook.site/019e0cf0-63bb-4ee3-960d-5390b65dfc46", clientJsonBody, fotoCasa1Part, fotoCasa2Part, fotoCasa3Part);
+        Call<Void> call = apiService.uploadClientData("https://webhook.site/467cb2cd-50aa-403b-b54f-27a1107d89bd", clientJsonBody, fotoCasa1Part, fotoCasa2Part, fotoCasa3Part);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -238,4 +277,33 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+    // Metodo para generar errores de prueba
+    private void probarErrores() {
+        // Error 1: división por cero
+        try {
+            int resultado = 10 / 0;
+        } catch (Exception e) {
+            logRepository.insertLog("Error de prueba 1: " + e.getMessage(), TAG);
+        }
+
+        // Error 2: NullPointerException
+        try {
+            String texto = null;
+            texto.length();
+        } catch (Exception e) {
+            logRepository.insertLog("Error de prueba 2: " + e.getMessage(), TAG);
+        }
+
+        // Error 3: ArrayIndexOutOfBoundsException
+        try {
+            int[] arreglo = new int[2];
+            int valor = arreglo[5];
+        } catch (Exception e) {
+            logRepository.insertLog("Error de prueba 3: " + e.getMessage(), TAG);
+        }
+
+        Toast.makeText(this, "Errores de prueba insertados en DB", Toast.LENGTH_SHORT).show();
+    }
+
+
 }

@@ -21,40 +21,56 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class SyncLogWorker extends Worker {
 
     private static final String TAG = "SyncLogWorker";
+    private static final String WEBHOOK_URL = "https://webhook.site/467cb2cd-50aa-403b-b54f-27a1107d89bd";
 
-    public SyncLogWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
-        super(context, workerParams);
+    public SyncLogWorker(@NonNull Context context, @NonNull WorkerParameters params) {
+        super(context, params);
     }
 
     @NonNull
     @Override
     public Result doWork() {
+
         AppDatabase database = AppDatabase.getDatabase(getApplicationContext());
         List<LogApp> logs = database.logAppDao().getAll();
 
         if (logs.isEmpty()) {
+            Log.d(TAG, "No hay logs para sincronizar.");
             return Result.success();
         }
 
+        Log.d(TAG, "Iniciando sincronización de " + logs.size() + " logs...");
+
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://webhook.site/")
+                .baseUrl("https://webhook.site/") // Base URL temporal, webhook recibirá los datos
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
         ApiService apiService = retrofit.create(ApiService.class);
 
         try {
-            Response<Void> response = apiService.uploadLogs("https://webhook.site/019e0cf0-63bb-4ee3-960d-5390b65dfc46", logs).execute();
+            // Enviar logs al servidor
+            Response<Void> response = apiService.uploadLogs(WEBHOOK_URL, logs).execute();
+
             if (response.isSuccessful()) {
+                Log.d(TAG, "Logs sincronizados correctamente, eliminando registros locales...");
+
+                // Borrar solo si se sincronizó correctamente
                 database.logAppDao().deleteAll();
+
+                Log.d(TAG, "Registros locales eliminados.");
                 return Result.success();
             } else {
-                Log.e(TAG, "Error syncing logs: " + response.code());
-                return Result.retry();
+                Log.e(TAG, "Error en la sincronización: " + response.code() + " - " + response.message());
+                return Result.retry(); // Reintentar más tarde
             }
+
         } catch (IOException e) {
-            Log.e(TAG, "Error syncing logs", e);
-            return Result.retry();
+            Log.e(TAG, "Fallo en la conexión al sincronizar logs", e);
+            return Result.retry(); // Reintentar automáticamente
+        } catch (Exception e) {
+            Log.e(TAG, "Error inesperado durante la sincronización", e);
+            return Result.failure();
         }
     }
 }
